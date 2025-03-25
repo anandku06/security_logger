@@ -133,15 +133,3 @@ This is just the start! Here’s what we could add:
 - Inspired by a love for learning and a bit of curiosity about keeping systems safe. 💻
 
 Happy coding, and enjoy catching those sneaky login fails! 🎉🔍
-```
-
----
-
-### How to Update It
-1. In your `security_logger` folder:
-   ```bash
-   nano README.md
-   ```
-2. Copy the entire block above and paste it (replace the old content).
-3. Save: `Ctrl+O`, Enter, then exit: `Ctrl+X`.
-4. Check: `cat README.md` or view it on GitHub.
