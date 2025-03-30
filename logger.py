@@ -15,9 +15,16 @@ def monitor_auth_log():
         auth_file.seek(0, os.SEEK_END)
         while True:
             line = auth_file.readline()
-            if line and "Failed password" in line:
+            if line:
                 timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-                event = f"{timestamp} - Suspicious: {line.strip()}"
+                if "Failed password" in line:
+                    event = f"{timestamp} - Suspicious: Failed Login - {line.strip()}"
+                elif "Accepted password" in line:
+                    event = f"{timestamp} - Notice: Successful login - {line.strip()}"
+                elif "sudo: " in line and "COMMAND" in line:
+                    event = f"{timestamp} - Warning: Sudo command executed - {line.strip()}"
+                else:
+                    continue
                 print(event)
                 save_event(event)
             time.sleep(0.1)
