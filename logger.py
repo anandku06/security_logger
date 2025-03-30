@@ -1,5 +1,6 @@
 import time
 import os
+from base64 import b64encode
 
 LOG_FILE = "security_log.txt"
 KEY = b"simplekey"
@@ -7,7 +8,7 @@ KEY = b"simplekey"
 def monitor_auth_log():
     auth_log_path = "/var/log/auth.log"
     if not os.path.exists(auth_log_path):
-        print("Error: auth.log not found. Are you on Linux?")
+        print("Error: auth.log not found. Aren't you on Linux?")
         return
 
     print("Monitoring started... Press Ctrl+C to stop.")
@@ -30,10 +31,11 @@ def monitor_auth_log():
             time.sleep(0.1)
 
 def save_event(event):
+    encrypted = b64encode(event.encode() + KEY).decode()
     with open(LOG_FILE, "a") as log_file:
-        log_file.write(event + "\n")
+        log_file.write(encrypted + "\n")
 
-if __name__ == "main":
+if __name__ == "__main__":
     try:
         monitor_auth_log()
     except KeyboardInterrupt:
