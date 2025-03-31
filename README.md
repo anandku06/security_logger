@@ -36,7 +36,7 @@ Don’t worry—I’ve got your back! Let’s set this up together. Open your te
 2. **Get the Code** 📥:
    - **With Git** (if you’re feeling fancy):
      ```bash
-     git clone https://github.com/yourusername/security-logger.git
+     git clone https://github.com/anandku06/security-logger.git
      cd security-logger
      ```
    - **Manually**: Download the zip, unzip it, and `cd` into the folder.
@@ -129,7 +129,6 @@ This is just the start! Here’s what we could add:
 - **Fun to Show Off**: The GUI and alerts make it demo-ready for presentations. 🎤
 
 ## Credits 🙌
-- Built by a newbie (me!) with big help from **Grok** at xAI—thanks for the wisdom! 🧠
 - Inspired by a love for learning and a bit of curiosity about keeping systems safe. 💻
 
 Happy coding, and enjoy catching those sneaky login fails! 🎉🔍
