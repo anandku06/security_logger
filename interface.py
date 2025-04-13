@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import scrolledtext, ttk, filedialog, messagebox
 import os
-import threading
 import datetime
 from logger import LOG_FILE
 
@@ -214,6 +213,7 @@ def update_analysis(logs):
 
 def start_monitoring():
     import subprocess
+    import threading
 
     def run_monitor():
         subprocess.call(["python3", "logger.py"])
@@ -292,7 +292,10 @@ analyse_btn.pack(side="left", padx=10)
 export_btn = ttk.Button(control_frame, text="Export Logs", command=export_logs)
 export_btn.pack(side="left", padx=10)
 
-status_label = ttk.Label(control_frame, text="Monitoring inactive", fg="gray")
+inactive_style = ttk.Style()
+inactive_style.configure("Inactive.TLabel", foreground="gray")
+
+status_label = ttk.Label(control_frame, text="Monitoring inactive", foreground="gray")
 status_label.pack(side="right", padx=10)
 
 if __name__ == "__main__":
