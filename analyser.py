@@ -25,7 +25,6 @@ def analyze_logs():
     print(f"Total successful logins: {len(successful_logins)}")
     print(f"Total sudo commands: {len(sudo_commands)}")
 
-    # Extract usernames from failed login attempts
     usernames_failed = []
     ip_addresses = []
     for log in failed_attempts:
@@ -34,7 +33,6 @@ def analyze_logs():
             user_index = parts.index("for") + 1
             usernames_failed.append(parts[user_index])
 
-        # Extract IP addresses
         ip_match = re.search(r"from (\d+\.\d+\.\d+\.\d+)", log)
         if ip_match:
             ip_addresses.append(ip_match.group(1))
@@ -68,7 +66,6 @@ def analyze_logs():
                 f"ALERT!! {user} succeeded after {failed_counts[user]} fails - possible breach!"
             )
 
-    # Analyze sudo commands
     if sudo_commands:
         print("\nSudo commands analysis:")
         for log in sudo_commands:
@@ -78,7 +75,6 @@ def analyze_logs():
                 command = cmd_match.group(1)
                 print(f"{timestamp}: {command}")
 
-    # Generate a summary report
     generate_report(
         failed_attempts, successful_logins, sudo_commands, failed_counts, ip_counts
     )
@@ -87,7 +83,6 @@ def analyze_logs():
 def generate_report(
     failed_attempts, successful_logins, sudo_commands, failed_counts, ip_counts
 ):
-    """Generate a comprehensive security report."""
     report = []
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -101,21 +96,18 @@ def generate_report(
     report.append(f"Sudo commands: {len(sudo_commands)}")
     report.append("=" * 50)
 
-    # High-risk users (multiple failed attempts)
     high_risk = {user: count for user, count in failed_counts.items() if count > 3}
     if high_risk:
         report.append("\nHIGH RISK ACCOUNTS:")
         for user, count in high_risk.items():
             report.append(f"- {user}: {count} failed attempts")
 
-    # Suspicious IPs
     suspicious_ips = {ip: count for ip, count in ip_counts.items() if count > 5}
     if suspicious_ips:
         report.append("\nSUSPICIOUS IP ADDRESSES:")
         for ip, count in suspicious_ips.items():
             report.append(f"- {ip}: {count} failed attempts")
 
-    # Potential breaches
     breaches = []
     for log in successful_logins:
         parts = log.split()
@@ -130,7 +122,6 @@ def generate_report(
         for user, fails in breaches:
             report.append(f"- {user}: Successful login after {fails} failed attempts")
 
-    # Write report to file
     with open("security_report.txt", "w") as f:
         f.write("\n".join(report))
 

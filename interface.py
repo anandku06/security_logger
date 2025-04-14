@@ -8,15 +8,12 @@ window = tk.Tk()
 window.title("Security Logger")
 window.geometry("700x500")
 
-# Add a more professional frame with tabs
 notebook = ttk.Notebook(window)
 notebook.pack(fill="both", expand=True, pady=5, padx=5)
 
-# Log display tab
 log_frame = ttk.Frame(notebook)
 notebook.add(log_frame, text="Security Logs")
 
-# Create a filter frame at the top
 filter_frame = ttk.Frame(log_frame)
 filter_frame.pack(fill="x", pady=5)
 
@@ -34,7 +31,6 @@ filter_combo["values"] = (
 filter_combo.current(0)
 filter_combo.pack(side="left", padx=5)
 
-# Add date filter
 date_label = ttk.Label(filter_frame, text="Date:")
 date_label.pack(side="left", padx=(15, 5))
 
@@ -43,7 +39,6 @@ date_var.set(datetime.datetime.now().strftime("%Y-%m-%d"))
 date_entry = ttk.Entry(filter_frame, textvariable=date_var, width=10)
 date_entry.pack(side="left")
 
-# Add search box
 search_label = ttk.Label(filter_frame, text="Search:")
 search_label.pack(side="left", padx=(15, 5))
 
@@ -51,7 +46,6 @@ search_var = tk.StringVar()
 search_entry = ttk.Entry(filter_frame, textvariable=search_var, width=15)
 search_entry.pack(side="left")
 
-# Add Apply Filter button
 apply_btn = ttk.Button(
     filter_frame, text="Apply Filter", command=lambda: update_display()
 )
@@ -63,14 +57,12 @@ log_display.pack(pady=5, padx=5, fill="both", expand=True)
 alert_label = tk.Label(log_frame, text="", fg="red")
 alert_label.pack()
 
-# Statistics tab
 stats_frame = ttk.Frame(notebook)
 notebook.add(stats_frame, text="Statistics")
 
 stats_text = scrolledtext.ScrolledText(stats_frame, width=80, height=25)
 stats_text.pack(pady=5, padx=5, fill="both", expand=True)
 
-# Analysis tab
 analysis_frame = ttk.Frame(notebook)
 notebook.add(analysis_frame, text="Analysis")
 
@@ -83,7 +75,6 @@ def update_display():
         with open(LOG_FILE, "r") as f:
             logs = f.readlines()
 
-        # Apply date filter if specified
         if date_var.get():
             try:
                 filter_date = date_var.get()
@@ -91,12 +82,10 @@ def update_display():
             except Exception:
                 pass
 
-        # Apply search filter if specified
         if search_var.get():
             search_term = search_var.get().lower()
             logs = [log for log in logs if search_term in log.lower()]
 
-        # Filter logs based on selection
         filter_type = filter_var.get()
         if filter_type == "Failed Logins":
             logs = [log for log in logs if "Failed Login" in log]
@@ -108,19 +97,16 @@ def update_display():
         log_display.delete(1.0, tk.END)
         log_display.insert(tk.END, "".join(logs))
 
-        # Count events for alerts and statistics
         failed_count = sum(1 for log in logs if "Failed Login" in log)
         success_count = sum(1 for log in logs if "Successful login" in log)
         sudo_count = sum(1 for log in logs if "Sudo command" in log)
 
-        # Update statistics
         stats_text.delete(1.0, tk.END)
         stats_text.insert(tk.END, "Security Event Statistics:\n\n")
         stats_text.insert(tk.END, f"• Failed login attempts: {failed_count}\n")
         stats_text.insert(tk.END, f"• Successful logins: {success_count}\n")
         stats_text.insert(tk.END, f"• Sudo commands executed: {sudo_count}\n\n")
 
-        # Add more detailed statistics
         if failed_count > 0:
             stats_text.insert(tk.END, "Most recent failed login:\n")
             for log in reversed(logs):
@@ -128,10 +114,8 @@ def update_display():
                     stats_text.insert(tk.END, f"  {log}\n\n")
                     break
 
-        # Update analysis based on the logs
         update_analysis(logs)
 
-        # Set alerts based on events
         if failed_count > 3:
             alert_label.config(
                 text=f"ALERT: {failed_count} failed login attempts!", fg="red"
@@ -160,7 +144,6 @@ def update_analysis(logs):
     analysis_text.insert(tk.END, "Security Analysis Report\n")
     analysis_text.insert(tk.END, "=======================\n\n")
 
-    # Extract usernames and IPs
     usernames = []
     ip_addresses = []
 
@@ -176,11 +159,9 @@ def update_analysis(logs):
             if ip_match:
                 ip_addresses.append(ip_match.group(1))
 
-    # Count occurrences
     username_counts = Counter(usernames)
     ip_counts = Counter(ip_addresses)
 
-    # Display top users with login attempts
     analysis_text.insert(tk.END, "Top Users with Login Attempts:\n")
     for user, count in username_counts.most_common(5):
         analysis_text.insert(tk.END, f"• {user}: {count} attempts\n")
@@ -189,7 +170,6 @@ def update_analysis(logs):
     for ip, count in ip_counts.most_common(5):
         analysis_text.insert(tk.END, f"• {ip}: {count} attempts\n")
 
-    # Look for suspicious patterns
     analysis_text.insert(tk.END, "\nSuspicious Activity:\n")
 
     suspicious_found = False
@@ -230,10 +210,8 @@ def run_analysis():
     import subprocess
 
     try:
-        # Run the analyser.py script
         subprocess.call(["python3", "analyser.py"])
 
-        # If analyser creates a report file, display it
         if os.path.exists("security_report.txt"):
             with open("security_report.txt", "r") as f:
                 report = f.read()
@@ -270,7 +248,6 @@ def export_logs():
             messagebox.showerror("Export Failed", f"Error: {str(e)}")
 
 
-# Control panel at bottom
 control_frame = ttk.Frame(window)
 control_frame.pack(fill="x", pady=10)
 
