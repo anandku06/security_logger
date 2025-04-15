@@ -2,8 +2,7 @@ import os.path
 import re
 from collections import Counter
 from datetime import datetime
-from logger import LOG_FILE
-
+from config import LOG_FILE, REPORT_FILE, FAILED_LOGIN_THRESHOLD  # Import from config
 
 def analyze_logs():
     if not os.path.exists(LOG_FILE):
@@ -43,13 +42,13 @@ def analyze_logs():
     print("\nFailed attempts by user:")
     for user, count in failed_counts.items():
         print(f"{user}: {count}")
-        if count > 3:
+        if count > FAILED_LOGIN_THRESHOLD:  # Use threshold from config
             print(f"ALERT!! Possible brute-force on {user}")
 
     print("\nFailed attempts by IP address:")
     for ip, count in ip_counts.items():
         print(f"{ip}: {count}")
-        if count > 5:
+        if count > 5:  # Hardcoded value remains; update if needed
             print(f"ALERT!! Possible network attack from {ip}")
 
     usernames_success = []
@@ -61,7 +60,7 @@ def analyze_logs():
 
     print("\nSuccessful logins by user:")
     for user in usernames_success:
-        if user in failed_counts and failed_counts[user] > 3:
+        if user in failed_counts and failed_counts[user] > FAILED_LOGIN_THRESHOLD:  # Use threshold
             print(
                 f"ALERT!! {user} succeeded after {failed_counts[user]} fails - possible breach!"
             )
@@ -96,13 +95,13 @@ def generate_report(
     report.append(f"Sudo commands: {len(sudo_commands)}")
     report.append("=" * 50)
 
-    high_risk = {user: count for user, count in failed_counts.items() if count > 3}
+    high_risk = {user: count for user, count in failed_counts.items() if count > FAILED_LOGIN_THRESHOLD}  # Use threshold
     if high_risk:
         report.append("\nHIGH RISK ACCOUNTS:")
         for user, count in high_risk.items():
             report.append(f"- {user}: {count} failed attempts")
 
-    suspicious_ips = {ip: count for ip, count in ip_counts.items() if count > 5}
+    suspicious_ips = {ip: count for ip, count in ip_counts.items() if count > 5}  # Hardcoded value remains
     if suspicious_ips:
         report.append("\nSUSPICIOUS IP ADDRESSES:")
         for ip, count in suspicious_ips.items():
@@ -114,7 +113,7 @@ def generate_report(
         if "for" in parts:
             user_index = parts.index("for") + 1
             username = parts[user_index]
-            if username in failed_counts and failed_counts[username] > 3:
+            if username in failed_counts and failed_counts[username] > FAILED_LOGIN_THRESHOLD:  # Use threshold
                 breaches.append((username, failed_counts[username]))
 
     if breaches:
@@ -122,10 +121,10 @@ def generate_report(
         for user, fails in breaches:
             report.append(f"- {user}: Successful login after {fails} failed attempts")
 
-    with open("security_report.txt", "w") as f:
+    with open(REPORT_FILE, "w") as f:  # Use REPORT_FILE from config
         f.write("\n".join(report))
 
-    print("\nReport saved to security_report.txt")
+    print(f"\nReport saved to {REPORT_FILE}")
 
 
 if __name__ == "__main__":
