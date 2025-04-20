@@ -1,5 +1,6 @@
 import time
 import os
+from config import LOG_MAX_SIZE
 
 LOG_FILE = "security_log.txt"
 
@@ -29,8 +30,17 @@ def monitor_auth_log():
             time.sleep(0.1)
 
 def save_event(event):
+    if os.path.exists(LOG_FILE) and os.path.getsize(LOG_FILE) > LOG_MAX_SIZE:
+        rotate_log_file()
     with open(LOG_FILE, "a") as log_file:
         log_file.write(event + "\n")
+
+def rotate_log_file():
+    rotatedFile = f"{LOG_FILE}.1"
+    if os.path.exists(rotatedFile):
+        os.remove(rotatedFile)
+    os.rename(LOG_FILE, rotatedFile)
+    print(f"Log file rotated: {rotatedFile}")
 
 if __name__ == "__main__":
     try:

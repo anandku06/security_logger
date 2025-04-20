@@ -4,6 +4,7 @@ Configuration settings for the Security Logger application.
 
 LOG_FILE = "security_log.txt"
 REPORT_FILE = "security_report.txt"
+LOG_MAX_SIZE = 5 * 1024 * 1024
 
 AUTH_LOG_PATH = "/var/log/auth.log"
 POLLING_INTERVAL = 0.1  # seconds between checks
