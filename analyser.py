@@ -4,6 +4,7 @@ from collections import Counter
 from datetime import datetime
 from config import LOG_FILE, REPORT_FILE, FAILED_LOGIN_THRESHOLD  # Import from config
 
+
 def analyze_logs():
     if not os.path.exists(LOG_FILE):
         print("No logs yet. Run logger.py first.")
@@ -60,7 +61,9 @@ def analyze_logs():
 
     print("\nSuccessful logins by user:")
     for user in usernames_success:
-        if user in failed_counts and failed_counts[user] > FAILED_LOGIN_THRESHOLD:  # Use threshold
+        if (
+            user in failed_counts and failed_counts[user] > FAILED_LOGIN_THRESHOLD
+        ):  # Use threshold
             print(
                 f"ALERT!! {user} succeeded after {failed_counts[user]} fails - possible breach!"
             )
@@ -95,13 +98,19 @@ def generate_report(
     report.append(f"Sudo commands: {len(sudo_commands)}")
     report.append("=" * 50)
 
-    high_risk = {user: count for user, count in failed_counts.items() if count > FAILED_LOGIN_THRESHOLD}  # Use threshold
+    high_risk = {
+        user: count
+        for user, count in failed_counts.items()
+        if count > FAILED_LOGIN_THRESHOLD
+    }  # Use threshold
     if high_risk:
         report.append("\nHIGH RISK ACCOUNTS:")
         for user, count in high_risk.items():
             report.append(f"- {user}: {count} failed attempts")
 
-    suspicious_ips = {ip: count for ip, count in ip_counts.items() if count > 5}  # Hardcoded value remains
+    suspicious_ips = {
+        ip: count for ip, count in ip_counts.items() if count > 5
+    }  # Hardcoded value remains
     if suspicious_ips:
         report.append("\nSUSPICIOUS IP ADDRESSES:")
         for ip, count in suspicious_ips.items():
@@ -113,7 +122,10 @@ def generate_report(
         if "for" in parts:
             user_index = parts.index("for") + 1
             username = parts[user_index]
-            if username in failed_counts and failed_counts[username] > FAILED_LOGIN_THRESHOLD:  # Use threshold
+            if (
+                username in failed_counts
+                and failed_counts[username] > FAILED_LOGIN_THRESHOLD
+            ):  # Use threshold
                 breaches.append((username, failed_counts[username]))
 
     if breaches:

@@ -1,4 +1,5 @@
 myenv/
 __pycache__/
 *.pyc
-security_logs.txt
+security_report.txt
+security_log.txt

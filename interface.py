@@ -1,8 +1,13 @@
 import tkinter as tk
-from tkinter import scrolledtext, ttk, filedialog, messagebox
+from tkinter import scrolledtext, ttk, filedialog, messagebox, simpledialog
 import os
 import datetime
 from logger import LOG_FILE
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 
 window = tk.Tk()
 window.title("Security Logger")
@@ -226,6 +231,53 @@ def run_analysis():
     except Exception as e:
         messagebox.showerror("Error", f"Analysis failed: {str(e)}")
 
+def send_logs_via_email():
+    """Send the log file via email."""
+    if not os.path.exists(LOG_FILE):
+        messagebox.showerror("Error", "Log file not found!")
+        return
+
+    # Prompt for email details
+    sender_email = "anandkr1704@gmail.com"
+    recipient_email = simpledialog.askstring("Recipient Email", "Enter recipient's email address:")
+    password = "zhgt euli iswq dnnv"
+
+    if not sender_email or not recipient_email or not password:
+        messagebox.showerror("Error", "All fields are required!")
+        return
+
+    try:
+        # Create the email
+        subject = "Security Logs"
+        body = "Please find the attached security logs."
+
+        msg = MIMEMultipart()
+        msg["From"] = sender_email
+        msg["To"] = recipient_email
+        msg["Subject"] = subject
+
+        msg.attach(MIMEText(body, "plain"))
+
+        # Attach the log file
+        with open(LOG_FILE, "rb") as attachment:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header(
+            "Content-Disposition",
+            f"attachment; filename={os.path.basename(LOG_FILE)}",
+        )
+        msg.attach(part)
+
+        # Send the email
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(sender_email, password)
+            server.sendmail(sender_email, recipient_email, msg.as_string())
+
+        messagebox.showinfo("Success", "Logs sent successfully!")
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to send email: {str(e)}")
 
 def export_logs():
     """Export logs to a user-specified file."""
@@ -268,6 +320,11 @@ analyse_btn.pack(side="left", padx=10)
 
 export_btn = ttk.Button(control_frame, text="Export Logs", command=export_logs)
 export_btn.pack(side="left", padx=10)
+
+send_email_btn = ttk.Button(
+    control_frame, text="Send Logs via Email", command=lambda: send_logs_via_email()
+)
+send_email_btn.pack(side="left", padx=10)
 
 inactive_style = ttk.Style()
 inactive_style.configure("Inactive.TLabel", foreground="gray")
